@@ -1,10 +1,11 @@
 
-import { MessageSquare, Download } from 'lucide-react';
+import { MessageSquare } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/context/auth-context';
 import ThemeToggle from '@/components/common/ThemeToggle';
 import { InstallButton } from '@/components/common/app-install/InstallDialog';
+import { InstallPromptProvider } from '@/components/common/app-install/InstallPromptContext';
 
 export default function Header() {
   const navigate = useNavigate();
@@ -18,7 +19,9 @@ export default function Header() {
           <span className="font-bold text-xl">QuantumAI</span>
         </div>
         <div className="flex items-center gap-4">
-          <InstallButton variant="ghost" size="icon" />
+          <InstallPromptProvider>
+            <InstallButton variant="ghost" size="icon" />
+          </InstallPromptProvider>
           <ThemeToggle />
           {user ? (
             <Button onClick={() => navigate('/chat')}>Go to Chat</Button>
