@@ -57,23 +57,29 @@ export function InstallResetButton() {
 
 // New component for the download buttons in the main page section
 export function MainPageDownloadButtons() {
-  const { installPrompt, installApp, isIOS, isAndroid, resetBannerDismissal } = useInstallPrompt();
+  const { installPrompt, installApp, isIOS, isAndroid, resetBannerDismissal, showBanner, setShowBanner } = useInstallPrompt();
 
   const handleAndroidClick = () => {
     if (installPrompt) {
       installApp();
     } else {
+      // Force show the banner
+      setShowBanner(true);
+      resetBannerDismissal();
       toast({
         title: "Installation tip",
-        description: "Look for 'Install App' or 'Add to Home Screen' in your browser's menu"
+        description: "Check the banner at the bottom of the screen for installation instructions"
       });
     }
   };
 
   const handleIOSClick = () => {
+    // Force show the banner for iOS
+    setShowBanner(true);
+    resetBannerDismissal();
     toast({
       title: "iOS Installation",
-      description: "Tap the Share icon in Safari, then 'Add to Home Screen'"
+      description: "Check the banner at the bottom of the screen for installation instructions"
     });
   };
 
@@ -81,6 +87,8 @@ export function MainPageDownloadButtons() {
     if (installPrompt) {
       installApp();
     } else {
+      // Force show the banner
+      setShowBanner(true);
       resetBannerDismissal();
       toast({
         title: "Installation",
