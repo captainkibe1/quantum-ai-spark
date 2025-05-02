@@ -2,9 +2,10 @@
 import { Button } from '@/components/ui/button';
 import { X, Download, Info, Sticker } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
-import { useInstallPrompt } from './InstallPromptContext';
+import { useInstallPrompt, InstallPromptProvider } from './InstallPromptContext';
 
-export function InstallButtons({ variant = "default" }) {
+// This is a child component that uses useInstallPrompt
+function InstallButtonsInner() {
   const { installPrompt, dismissBanner, installApp, isIOS, isAndroid } = useInstallPrompt();
 
   return (
@@ -36,7 +37,16 @@ export function InstallButtons({ variant = "default" }) {
   );
 }
 
-export function InstallResetButton() {
+// Public API - always wrapped with provider
+export function InstallButtons({ variant = "default" }) {
+  return (
+    <InstallPromptProvider>
+      <InstallButtonsInner />
+    </InstallPromptProvider>
+  );
+}
+
+function InstallResetButtonInner() {
   const { resetBannerDismissal } = useInstallPrompt();
   
   return (
@@ -55,8 +65,16 @@ export function InstallResetButton() {
   );
 }
 
-// New component for the download buttons in the main page section
-export function MainPageDownloadButtons() {
+// Public API - always wrapped with provider
+export function InstallResetButton() {
+  return (
+    <InstallPromptProvider>
+      <InstallResetButtonInner />
+    </InstallPromptProvider>
+  );
+}
+
+function MainPageDownloadButtonsInner() {
   const { installPrompt, installApp, isIOS, isAndroid, resetBannerDismissal, showBanner, setShowBanner } = useInstallPrompt();
 
   const handleAndroidClick = () => {
@@ -120,5 +138,14 @@ export function MainPageDownloadButtons() {
         </Button>
       )}
     </div>
+  );
+}
+
+// Public API - always wrapped with provider
+export function MainPageDownloadButtons() {
+  return (
+    <InstallPromptProvider>
+      <MainPageDownloadButtonsInner />
+    </InstallPromptProvider>
   );
 }

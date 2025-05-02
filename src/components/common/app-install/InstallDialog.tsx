@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { Download } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -10,21 +11,7 @@ import {
 } from '@/components/ui/dialog';
 import { useInstallPrompt, InstallPromptProvider } from './InstallPromptContext';
 
-export function InstallButton({ 
-  variant = "default", 
-  size = "default", 
-  className = "" 
-}: { 
-  variant?: "link" | "default" | "destructive" | "outline" | "secondary" | "ghost";
-  size?: "default" | "sm" | "lg" | "icon";
-  className?: string;
-}) {
-  // Add a safety wrapper to ensure the component is always used with a provider
-  return (
-    <InstallButtonInner variant={variant} size={size} className={className} />
-  );
-}
-
+// This component should NOT be used directly anymore - use InstallButtonWithProvider instead
 function InstallButtonInner({ 
   variant = "default", 
   size = "default", 
@@ -166,7 +153,8 @@ function InstallDialog({
   );
 }
 
-// Export a wrapped version that already includes the provider
+// Export a wrapped version that already includes the provider - this should be the only
+// component imported and used by other files
 export function InstallButtonWithProvider({
   variant = "default",
   size = "default",
@@ -178,7 +166,17 @@ export function InstallButtonWithProvider({
 }) {
   return (
     <InstallPromptProvider>
-      <InstallButton variant={variant} size={size} className={className} />
+      <InstallButtonInner variant={variant} size={size} className={className} />
     </InstallPromptProvider>
   );
+}
+
+// Deprecated - for backward compatibility only, but all usage should be replaced with InstallButtonWithProvider
+export function InstallButton(props: {
+  variant?: "link" | "default" | "destructive" | "outline" | "secondary" | "ghost";
+  size?: "default" | "sm" | "lg" | "icon";
+  className?: string;
+}) {
+  console.warn("InstallButton is deprecated, use InstallButtonWithProvider instead");
+  return <InstallButtonWithProvider {...props} />;
 }
