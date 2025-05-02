@@ -70,7 +70,9 @@ function InstallButtonInner({
       </Button>
       
       {/* Here we need to wrap the dialog content with a provider */}
-      <InstallDialogContent open={open} setOpen={setOpen} />
+      <InstallPromptProvider>
+        <InstallDialogContent open={open} setOpen={setOpen} />
+      </InstallPromptProvider>
     </>
   );
 }
@@ -184,6 +186,9 @@ export function InstallButton({
   size?: "default" | "sm" | "lg" | "icon";
   className?: string;
 }) {
-  // Use the wrapped version to ensure context is provided
-  return <InstallButtonWithProvider variant={variant} size={size} className={className} />;
+  return (
+    <InstallPromptProvider>
+      <InstallButtonInner variant={variant} size={size} className={className} />
+    </InstallPromptProvider>
+  );
 }
