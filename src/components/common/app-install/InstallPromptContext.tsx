@@ -41,46 +41,38 @@ export function InstallPromptProvider({ children }: { children: ReactNode }) {
     const isAppInstalled = window.matchMedia('(display-mode: standalone)').matches;
     setIsStandalone(isAppInstalled);
     
-    // Check if the user has dismissed the banner before
-    const bannerDismissed = localStorage.getItem('app-install-banner-dismissed') === 'true';
-    const lastDismissed = parseInt(localStorage.getItem('app-install-banner-dismissed-time') || '0', 10);
-    const daysSinceDismissed = (Date.now() - lastDismissed) / (1000 * 60 * 60 * 24);
-    const showAgain = daysSinceDismissed > 7; // Show again after a week
-    
     // Detect iOS and Android
     const ua = navigator.userAgent.toLowerCase();
-    // Updated iOS detection to avoid TypeScript error
     const iOS = /iphone|ipad|ipod/.test(ua) && !(window.MSStream);
     const android = /android/.test(ua);
     
     setIsIOS(iOS);
     setIsAndroid(android);
     
-    if (!isAppInstalled && (!bannerDismissed || showAgain)) {
-      // Handle beforeinstallprompt for Android and desktop
-      const handleBeforeInstallPrompt = (e: Event) => {
-        // Prevent the mini-infobar from appearing on mobile
-        e.preventDefault();
-        // Stash the event so it can be triggered later
-        setInstallPrompt(e as BeforeInstallPromptEvent);
-        // Show the banner
-        setShowBanner(true);
-        console.log('Before install prompt captured');
-      };
+    // Handle beforeinstallprompt for Android and desktop
+    const handleBeforeInstallPrompt = (e: Event) => {
+      // Prevent the mini-infobar from appearing on mobile
+      e.preventDefault();
+      // Stash the event so it can be triggered later
+      setInstallPrompt(e as BeforeInstallPromptEvent);
+      console.log('Before install prompt captured');
+    };
 
-      window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
-      
-      // Show banner for iOS even without the install prompt
-      // as iOS doesn't support beforeinstallprompt
-      if (iOS) {
-        setShowBanner(true);
-        console.log('iOS device detected, showing install banner');
-      }
-
-      return () => {
-        window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
-      };
-    }
+    window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
+    
+    // Also listen for appinstalled event
+    window.addEventListener('appinstalled', (e) => {
+      console.log('App was installed', e);
+      toast({
+        title: "App installed successfully!",
+        description: "You can now use QuantumAI from your home screen"
+      });
+    });
+    
+    return () => {
+      window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
+      window.removeEventListener('appinstalled', () => {});
+    };
   }, []);
 
   const dismissBanner = () => {
@@ -95,10 +87,6 @@ export function InstallPromptProvider({ children }: { children: ReactNode }) {
     localStorage.removeItem('app-install-banner-dismissed-time');
     setShowBanner(true);
     console.log('Install banner preferences reset');
-    toast({
-      title: "Install banner reset",
-      description: "You'll now see the install prompt again"
-    });
   };
 
   const installApp = async () => {
@@ -111,11 +99,15 @@ export function InstallPromptProvider({ children }: { children: ReactNode }) {
           title: "Installation tip",
           description: "Look for 'Install App' or 'Add to Home Screen' in your browser's menu",
         });
+      } else if (isIOS) {
+        toast({
+          title: "iOS Installation",
+          description: "Check the banner at the bottom of your screen for iOS installation steps",
+        });
       } else {
         toast({
           title: "Installation not available",
           description: "Please use your browser's menu to install the app",
-          variant: "destructive"
         });
       }
       return;
@@ -123,12 +115,6 @@ export function InstallPromptProvider({ children }: { children: ReactNode }) {
     
     console.log('Attempting to show install prompt');
     try {
-      // Show initial toast
-      toast({
-        title: "Starting installation",
-        description: "Please follow the browser prompts to install QuantumAI"
-      });
-      
       // Show the install prompt
       await installPrompt.prompt();
       
@@ -139,17 +125,16 @@ export function InstallPromptProvider({ children }: { children: ReactNode }) {
       // We no longer need the prompt regardless of outcome
       setInstallPrompt(null);
       
-      // Update toast based on user's choice
       if (outcome === 'accepted') {
         toast({
-          title: "Installation successful",
-          description: "QuantumAI was successfully added to your device!"
+          title: "Installation started",
+          description: "QuantumAI is being added to your device!"
         });
         setShowBanner(false);
       } else {
         toast({
           title: "Installation cancelled",
-          description: "You can install the app later from the banner",
+          description: "You can install the app later using the icon in the header",
           variant: "destructive"
         });
       }

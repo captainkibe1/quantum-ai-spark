@@ -1,5 +1,5 @@
 
-const CACHE_NAME = 'quantum-ai-v5';
+const CACHE_NAME = 'quantum-ai-v6';
 const urlsToCache = [
   '/',
   '/index.html',
@@ -7,6 +7,7 @@ const urlsToCache = [
   '/icons/icon-192.png',
   '/icons/icon-512.png',
   '/icons/maskable-icon.png',
+  '/lovable-uploads/829d1eea-1380-41fa-8297-04d3cc474261.png',
   '/service-worker.js',
   '/index.css',
   '/favicon.ico'
