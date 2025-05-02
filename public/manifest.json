@@ -11,12 +11,6 @@
   "categories": ["productivity", "ai", "utilities"],
   "icons": [
     {
-      "src": "/lovable-uploads/98c6c85b-4c8c-458b-a9c8-81b0d89c7a16.png",
-      "sizes": "32x32",
-      "type": "image/png",
-      "purpose": "any"
-    },
-    {
       "src": "/icons/icon-192.png",
       "sizes": "192x192",
       "type": "image/png",

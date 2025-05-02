@@ -13,11 +13,7 @@ export default function Header() {
     <header className="border-b">
       <div className="container max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <img 
-            src="/lovable-uploads/98c6c85b-4c8c-458b-a9c8-81b0d89c7a16.png" 
-            alt="QuantumAI" 
-            className="h-8 w-8"
-          />
+          <MessageSquare className="h-6 w-6 text-primary" />
           <span className="font-bold text-xl">QuantumAI</span>
         </div>
         <div className="flex items-center gap-4">
