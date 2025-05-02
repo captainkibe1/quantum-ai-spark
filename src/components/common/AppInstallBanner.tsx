@@ -1,11 +1,13 @@
 
 import { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { X } from 'lucide-react';
+import { X, Download, Info } from 'lucide-react';
 
 const AppInstallBanner = () => {
   const [showBanner, setShowBanner] = useState(false);
   const [installPrompt, setInstallPrompt] = useState<any>(null);
+  const [isIOS, setIsIOS] = useState(false);
+  const [isAndroid, setIsAndroid] = useState(false);
 
   useEffect(() => {
     // Check if the app is already installed
@@ -13,6 +15,14 @@ const AppInstallBanner = () => {
     
     // Check if the user has dismissed the banner before
     const bannerDismissed = localStorage.getItem('app-install-banner-dismissed') === 'true';
+    
+    // Detect iOS and Android
+    const ua = navigator.userAgent;
+    const iOS = /iPad|iPhone|iPod/.test(ua) && !(window as any).MSStream;
+    const android = /Android/.test(ua);
+    
+    setIsIOS(iOS);
+    setIsAndroid(android);
     
     if (!isAppInstalled && !bannerDismissed) {
       window.addEventListener('beforeinstallprompt', (e) => {
@@ -23,6 +33,12 @@ const AppInstallBanner = () => {
         // Show the banner
         setShowBanner(true);
       });
+      
+      // Show banner for iOS even without the install prompt
+      // as iOS doesn't support beforeinstallprompt
+      if (iOS) {
+        setShowBanner(true);
+      }
     }
     
     return () => {
@@ -53,20 +69,75 @@ const AppInstallBanner = () => {
     }
   };
 
-  if (!showBanner) return null;
+  const showIOSInstructions = () => {
+    return (
+      <div className="flex-1">
+        <p className="font-medium">Install QuantumAI on your iOS device</p>
+        <p className="text-sm opacity-80">
+          1. Tap <strong>Share</strong> <span className="inline-block">⎙</span> icon
+          <br/>
+          2. Scroll down and tap <strong>Add to Home Screen</strong>
+        </p>
+      </div>
+    );
+  };
+  
+  const showAndroidInstructions = () => {
+    if (installPrompt) {
+      return (
+        <div className="flex-1">
+          <p className="font-medium">Install QuantumAI on your device</p>
+          <p className="text-sm opacity-80">Use our app for a better experience</p>
+        </div>
+      );
+    } else {
+      return (
+        <div className="flex-1">
+          <p className="font-medium">Install QuantumAI on your Android device</p>
+          <p className="text-sm opacity-80">
+            1. Tap menu icon in Chrome <span className="inline-block">⋮</span>
+            <br/>
+            2. Select <strong>Install App</strong> or <strong>Add to Home Screen</strong>
+          </p>
+        </div>
+      );
+    }
+  };
 
-  return (
-    <div className="fixed bottom-0 left-0 right-0 flex items-center justify-between bg-primary text-primary-foreground p-4 shadow-lg z-50">
+  const showDefaultInstructions = () => {
+    return (
       <div className="flex-1">
         <p className="font-medium">Install QuantumAI on your device</p>
         <p className="text-sm opacity-80">Use our app for a better experience</p>
       </div>
+    );
+  };
+
+  if (!showBanner) return null;
+
+  return (
+    <div className="fixed bottom-0 left-0 right-0 flex items-center justify-between bg-primary text-primary-foreground p-4 shadow-lg z-50">
+      {isIOS ? showIOSInstructions() : 
+       isAndroid ? showAndroidInstructions() : 
+       showDefaultInstructions()}
+      
       <div className="flex items-center space-x-2">
         <Button variant="outline" size="sm" className="border-primary-foreground/20 hover:bg-primary-foreground/10" onClick={dismissBanner}>
           <X className="h-4 w-4" />
           <span className="sr-only">Dismiss</span>
         </Button>
-        <Button variant="secondary" onClick={installApp}>Install Now</Button>
+        {installPrompt && (
+          <Button variant="secondary" onClick={installApp}>
+            <Download className="mr-1 h-4 w-4" />
+            Install Now
+          </Button>
+        )}
+        {(!installPrompt && !isIOS) && (
+          <Button variant="secondary" onClick={() => window.open('https://developer.mozilla.org/en-US/docs/Web/Progressive_web_apps/Guides/Installing', '_blank')}>
+            <Info className="mr-1 h-4 w-4" />
+            How to Install
+          </Button>
+        )}
       </div>
     </div>
   );
