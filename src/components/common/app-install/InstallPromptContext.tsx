@@ -83,6 +83,25 @@ export function InstallPromptProvider({ children }: { children: ReactNode }) {
     }
   }, []);
 
+  // Add a listener for the appinstalled event
+  useEffect(() => {
+    const handleAppInstalled = () => {
+      console.log('App was successfully installed');
+      toast({
+        title: "Installation complete",
+        description: "QuantumAI has been installed successfully!"
+      });
+      // Hide the banner after successful installation
+      setShowBanner(false);
+    };
+    
+    window.addEventListener('appinstalled', handleAppInstalled);
+    
+    return () => {
+      window.removeEventListener('appinstalled', handleAppInstalled);
+    };
+  }, []);
+
   const dismissBanner = () => {
     setShowBanner(false);
     localStorage.setItem('app-install-banner-dismissed', 'true');
@@ -110,6 +129,11 @@ export function InstallPromptProvider({ children }: { children: ReactNode }) {
         toast({
           title: "Installation tip",
           description: "Look for 'Install App' or 'Add to Home Screen' in your browser's menu",
+        });
+      } else if (isIOS) {
+        toast({
+          title: "iOS Installation",
+          description: "Check the banner at the bottom of the screen for instructions",
         });
       } else {
         toast({

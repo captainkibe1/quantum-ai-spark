@@ -55,7 +55,6 @@ export function InstallResetButton() {
   );
 }
 
-// New component for the download buttons in the main page section
 export function MainPageDownloadButtons() {
   const { installPrompt, installApp, isIOS, isAndroid, resetBannerDismissal, showBanner, setShowBanner } = useInstallPrompt();
 
@@ -68,7 +67,8 @@ export function MainPageDownloadButtons() {
       resetBannerDismissal();
       toast({
         title: "Installation tip",
-        description: "Check the banner at the bottom of the screen for installation instructions"
+        description: "Check the banner at the bottom of the screen for installation instructions",
+        variant: "default"
       });
     }
   };
@@ -79,7 +79,8 @@ export function MainPageDownloadButtons() {
     resetBannerDismissal();
     toast({
       title: "iOS Installation",
-      description: "Check the banner at the bottom of the screen for installation instructions"
+      description: "Check the banner at the bottom of the screen for installation instructions",
+      variant: "default"
     });
   };
 
@@ -92,7 +93,8 @@ export function MainPageDownloadButtons() {
       resetBannerDismissal();
       toast({
         title: "Installation",
-        description: "Check the banner at the bottom of the screen for installation instructions"
+        description: "Check the banner at the bottom of the screen for installation instructions",
+        variant: "default"
       });
     }
   };

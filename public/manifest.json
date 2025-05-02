@@ -11,6 +11,12 @@
   "categories": ["productivity", "ai", "utilities"],
   "icons": [
     {
+      "src": "/icons/quantum-favicon.png",
+      "sizes": "32x32",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
       "src": "/icons/icon-192.png",
       "sizes": "192x192",
       "type": "image/png",
