@@ -11,7 +11,7 @@ import {
 } from '@/components/ui/dialog';
 import { useInstallPrompt, InstallPromptProvider } from './InstallPromptContext';
 
-// This component uses the context and must be inside a provider
+// Inner component that uses the context and must be inside a provider
 function InstallButtonInner({ 
   variant = "default", 
   size = "default", 
@@ -186,14 +186,12 @@ export function InstallButtonWithProvider({
   );
 }
 
-// Do not use this directly - it will be removed in a future version
+// For backward compatibility - this will be removed in a future version
 export function InstallButton(props: {
   variant?: "link" | "default" | "destructive" | "outline" | "secondary" | "ghost";
   size?: "default" | "sm" | "lg" | "icon";
   className?: string;
 }) {
-  // We need to wrap the InstallButton in its own InstallPromptProvider
-  // directly, not just return InstallButtonWithProvider
   return (
     <InstallPromptProvider>
       <InstallButtonInner {...props} />
