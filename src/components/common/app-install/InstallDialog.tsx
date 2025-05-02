@@ -176,5 +176,6 @@ export function InstallButton(props: {
   size?: "default" | "sm" | "lg" | "icon";
   className?: string;
 }) {
+  // Ensure this legacy function is also wrapped with the provider
   return <InstallButtonWithProvider {...props} />;
 }
