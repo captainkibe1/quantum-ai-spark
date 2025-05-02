@@ -10,6 +10,13 @@ interface BeforeInstallPromptEvent extends Event {
   userChoice: Promise<{ outcome: 'accepted' | 'dismissed' }>;
 }
 
+// Add MSStream to Window interface
+declare global {
+  interface Window {
+    MSStream?: any;
+  }
+}
+
 const AppInstallBanner = () => {
   const [showBanner, setShowBanner] = useState(false);
   const [installPrompt, setInstallPrompt] = useState<BeforeInstallPromptEvent | null>(null);
@@ -30,7 +37,8 @@ const AppInstallBanner = () => {
     
     // Detect iOS and Android
     const ua = navigator.userAgent.toLowerCase();
-    const iOS = /iphone|ipad|ipod/.test(ua) && !window.MSStream;
+    // Updated iOS detection to avoid TypeScript error
+    const iOS = /iphone|ipad|ipod/.test(ua) && !(window.MSStream);
     const android = /android/.test(ua);
     
     setIsIOS(iOS);
