@@ -1,7 +1,8 @@
 
 import { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { X, Download, Info } from 'lucide-react';
+import { X, Download, Info, Share2 } from 'lucide-react';
+import { toast } from '@/hooks/use-toast';
 
 const AppInstallBanner = () => {
   const [showBanner, setShowBanner] = useState(false);
@@ -25,47 +26,81 @@ const AppInstallBanner = () => {
     setIsAndroid(android);
     
     if (!isAppInstalled && !bannerDismissed) {
-      window.addEventListener('beforeinstallprompt', (e) => {
+      // Handle beforeinstallprompt for Android and desktop
+      const handleBeforeInstallPrompt = (e: Event) => {
         // Prevent the mini-infobar from appearing on mobile
         e.preventDefault();
         // Stash the event so it can be triggered later
         setInstallPrompt(e);
         // Show the banner
         setShowBanner(true);
-      });
+        console.log('Before install prompt captured');
+      };
+
+      window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
       
       // Show banner for iOS even without the install prompt
       // as iOS doesn't support beforeinstallprompt
       if (iOS) {
         setShowBanner(true);
+        console.log('iOS device detected, showing install banner');
       }
+
+      return () => {
+        window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
+      };
     }
-    
-    return () => {
-      window.removeEventListener('beforeinstallprompt', () => {});
-    };
   }, []);
 
   const dismissBanner = () => {
     setShowBanner(false);
     localStorage.setItem('app-install-banner-dismissed', 'true');
+    console.log('Banner dismissed and preference saved');
+  };
+
+  const resetBannerDismissal = () => {
+    localStorage.removeItem('app-install-banner-dismissed');
+    setShowBanner(true);
+    console.log('Install banner preferences reset');
+    toast({
+      title: "Install banner reset",
+      description: "You'll now see the install prompt again"
+    });
   };
 
   const installApp = async () => {
-    if (!installPrompt) return;
+    if (!installPrompt) {
+      console.log('No install prompt available');
+      return;
+    }
     
+    console.log('Attempting to show install prompt');
     // Show the install prompt
     installPrompt.prompt();
     
-    // Wait for the user to respond to the prompt
-    const { outcome } = await installPrompt.userChoice;
-    
-    // We no longer need the prompt regardless of outcome
-    setInstallPrompt(null);
-    
-    // Hide the banner if the app was installed
-    if (outcome === 'accepted') {
-      setShowBanner(false);
+    try {
+      // Wait for the user to respond to the prompt
+      const { outcome } = await installPrompt.userChoice;
+      console.log(`User choice outcome: ${outcome}`);
+      
+      // We no longer need the prompt regardless of outcome
+      setInstallPrompt(null);
+      
+      // Hide the banner if the app was installed
+      if (outcome === 'accepted') {
+        setShowBanner(false);
+        toast({
+          title: "Installation started",
+          description: "QuantumAI is being installed on your device"
+        });
+      }
+    } catch (error) {
+      console.error('Error during installation:', error);
+      toast({
+        title: "Installation error",
+        description: "There was a problem installing the app",
+        variant: "destructive"
+      });
     }
   };
 
@@ -74,7 +109,7 @@ const AppInstallBanner = () => {
       <div className="flex-1">
         <p className="font-medium">Install QuantumAI on your iOS device</p>
         <p className="text-sm opacity-80">
-          1. Tap <strong>Share</strong> <span className="inline-block">⎙</span> icon
+          1. Tap <Share2 className="inline-block h-4 w-4" /> Share icon
           <br/>
           2. Scroll down and tap <strong>Add to Home Screen</strong>
         </p>
@@ -87,7 +122,7 @@ const AppInstallBanner = () => {
       return (
         <div className="flex-1">
           <p className="font-medium">Install QuantumAI on your device</p>
-          <p className="text-sm opacity-80">Use our app for a better experience</p>
+          <p className="text-sm opacity-80">Tap "Install Now" to add this app to your home screen</p>
         </div>
       );
     } else {
@@ -95,7 +130,7 @@ const AppInstallBanner = () => {
         <div className="flex-1">
           <p className="font-medium">Install QuantumAI on your Android device</p>
           <p className="text-sm opacity-80">
-            1. Tap menu icon in Chrome <span className="inline-block">⋮</span>
+            1. Tap menu icon in browser <span className="inline-block">⋮</span>
             <br/>
             2. Select <strong>Install App</strong> or <strong>Add to Home Screen</strong>
           </p>
@@ -108,15 +143,25 @@ const AppInstallBanner = () => {
     return (
       <div className="flex-1">
         <p className="font-medium">Install QuantumAI on your device</p>
-        <p className="text-sm opacity-80">Use our app for a better experience</p>
+        <p className="text-sm opacity-80">Use our app for a better experience and offline access</p>
       </div>
     );
   };
 
-  if (!showBanner) return null;
+  if (!showBanner) {
+    // Show a small button to reset banner dismissal
+    return (
+      <div className="fixed bottom-4 right-4 z-50">
+        <Button variant="outline" size="sm" className="rounded-full p-2" onClick={resetBannerDismissal} title="Install app">
+          <Download className="h-4 w-4" />
+          <span className="sr-only">Show install options</span>
+        </Button>
+      </div>
+    );
+  }
 
   return (
-    <div className="fixed bottom-0 left-0 right-0 flex items-center justify-between bg-primary text-primary-foreground p-4 shadow-lg z-50">
+    <div className="fixed bottom-0 left-0 right-0 flex items-center justify-between bg-primary text-primary-foreground p-4 shadow-lg z-50 animate-in fade-in slide-in-from-bottom-5">
       {isIOS ? showIOSInstructions() : 
        isAndroid ? showAndroidInstructions() : 
        showDefaultInstructions()}
@@ -133,7 +178,7 @@ const AppInstallBanner = () => {
           </Button>
         )}
         {(!installPrompt && !isIOS) && (
-          <Button variant="secondary" onClick={() => window.open('https://developer.mozilla.org/en-US/docs/Web/Progressive_web_apps/Guides/Installing', '_blank')}>
+          <Button variant="secondary" onClick={() => window.open('https://web.dev/learn/pwa/installation/', '_blank')}>
             <Info className="mr-1 h-4 w-4" />
             How to Install
           </Button>

@@ -1,5 +1,5 @@
 
-const CACHE_NAME = 'quantum-ai-v2';
+const CACHE_NAME = 'quantum-ai-v3';
 const urlsToCache = [
   '/',
   '/index.html',
@@ -7,17 +7,23 @@ const urlsToCache = [
   '/icons/icon-192.png',
   '/icons/icon-512.png',
   '/icons/maskable-icon.png',
-  '/service-worker.js'
+  '/service-worker.js',
+  '/index.css',
+  '/favicon.ico'
 ];
 
 // Install a service worker
 self.addEventListener('install', event => {
+  console.log('Service Worker installing.');
   // Perform install steps
   event.waitUntil(
     caches.open(CACHE_NAME)
       .then(cache => {
         console.log('Opened cache');
         return cache.addAll(urlsToCache);
+      })
+      .catch(error => {
+        console.error('Service worker cache installation failed:', error);
       })
   );
   // Force the waiting service worker to become the active service worker
@@ -69,12 +75,14 @@ self.addEventListener('fetch', event => {
 
 // Update a service worker
 self.addEventListener('activate', event => {
+  console.log('Service Worker activating.');
   const cacheWhitelist = [CACHE_NAME];
   event.waitUntil(
     caches.keys().then(cacheNames => {
       return Promise.all(
         cacheNames.map(cacheName => {
           if (cacheWhitelist.indexOf(cacheName) === -1) {
+            console.log('Deleting outdated cache:', cacheName);
             return caches.delete(cacheName);
           }
         })
@@ -83,4 +91,11 @@ self.addEventListener('activate', event => {
   );
   // Claim any clients immediately
   self.clients.claim();
+});
+
+// Handle the 'message' event to communicate with the main thread
+self.addEventListener('message', (event) => {
+  if (event.data && event.data.type === 'SKIP_WAITING') {
+    self.skipWaiting();
+  }
 });

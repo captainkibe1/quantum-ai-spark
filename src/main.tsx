@@ -5,14 +5,38 @@ import './index.css'
 
 // Register service worker for PWA
 if ('serviceWorker' in navigator) {
-  window.addEventListener('load', () => {
-    navigator.serviceWorker.register('/service-worker.js')
-      .then(registration => {
-        console.log('ServiceWorker registration successful with scope: ', registration.scope);
-      })
-      .catch(err => {
-        console.log('ServiceWorker registration failed: ', err);
+  window.addEventListener('load', async () => {
+    try {
+      const registration = await navigator.serviceWorker.register('/service-worker.js');
+      console.log('ServiceWorker registration successful with scope: ', registration.scope);
+      
+      // Check if there's an update and notify
+      registration.addEventListener('updatefound', () => {
+        // A new service worker is being installed
+        const newWorker = registration.installing;
+        console.log('Service worker update found and installing');
+        
+        if (newWorker) {
+          newWorker.addEventListener('statechange', () => {
+            if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+              console.log('New content is available, please refresh.');
+            }
+          });
+        }
       });
+      
+    } catch (err) {
+      console.error('ServiceWorker registration failed: ', err);
+    }
+  });
+  
+  // Handle service worker updates
+  let refreshing = false;
+  navigator.serviceWorker.addEventListener('controllerchange', () => {
+    if (refreshing) return;
+    refreshing = true;
+    console.log('Controller changed, refreshing page');
+    window.location.reload();
   });
 }
 

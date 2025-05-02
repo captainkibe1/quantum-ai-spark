@@ -1,6 +1,6 @@
 
 {
-  "name": "QuantumAI",
+  "name": "QuantumAI Assistant",
   "short_name": "QuantumAI",
   "description": "Your personal AI assistant with advanced language and image generation capabilities",
   "start_url": "/",
@@ -33,7 +33,8 @@
     {
       "src": "/screenshots/screenshot1.png",
       "sizes": "1280x720",
-      "type": "image/png"
+      "type": "image/png",
+      "form_factor": "wide"
     }
   ],
   "related_applications": [],
