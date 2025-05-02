@@ -1,5 +1,6 @@
 
 import { createContext, useContext, useEffect, useState, ReactNode } from 'react';
+import { toast } from '@/hooks/use-toast';
 
 // Declare the BeforeInstallPromptEvent interface
 export interface BeforeInstallPromptEvent extends Event {
@@ -99,11 +100,22 @@ export function InstallPromptProvider({ children }: { children: ReactNode }) {
   const installApp = async () => {
     if (!installPrompt) {
       console.log('No install prompt available');
+      toast({
+        title: "Installation not available",
+        description: "Please use your browser's menu to install the app",
+        variant: "destructive"
+      });
       return;
     }
     
     console.log('Attempting to show install prompt');
     try {
+      // Show initial toast
+      const initialToast = toast({
+        title: "Starting installation",
+        description: "Please follow the browser prompts to install QuantumAI"
+      });
+      
       // Show the install prompt
       await installPrompt.prompt();
       
@@ -114,12 +126,27 @@ export function InstallPromptProvider({ children }: { children: ReactNode }) {
       // We no longer need the prompt regardless of outcome
       setInstallPrompt(null);
       
-      // Hide the banner if the app was installed
+      // Update toast based on user's choice
       if (outcome === 'accepted') {
+        toast({
+          title: "Installation successful",
+          description: "QuantumAI was successfully added to your device!",
+        });
         setShowBanner(false);
+      } else {
+        toast({
+          title: "Installation cancelled",
+          description: "You can install the app later from the banner",
+          variant: "destructive"
+        });
       }
     } catch (error) {
       console.error('Error during installation:', error);
+      toast({
+        title: "Installation failed",
+        description: "There was a problem installing the app. Please try again later.",
+        variant: "destructive"
+      });
     }
   };
 
