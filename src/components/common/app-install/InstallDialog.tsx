@@ -69,9 +69,7 @@ function InstallButtonInner({
         )}
       </Button>
       
-      <InstallPromptProvider>
-        <InstallDialogContent open={open} setOpen={setOpen} />
-      </InstallPromptProvider>
+      <InstallDialogContent open={open} setOpen={setOpen} />
     </>
   );
 }
@@ -185,6 +183,7 @@ export function InstallButton({
   size?: "default" | "sm" | "lg" | "icon";
   className?: string;
 }) {
+  // This function needs to be fully wrapped with the provider
   return (
     <InstallPromptProvider>
       <InstallButtonInner variant={variant} size={size} className={className} />
