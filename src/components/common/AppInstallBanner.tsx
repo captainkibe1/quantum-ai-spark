@@ -1,8 +1,8 @@
-
 import { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { X, Download, Info, Share2 } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
+import { InstallPromptProvider } from './app-install/InstallPromptContext';
 
 // Declare the BeforeInstallPromptEvent interface
 interface BeforeInstallPromptEvent extends Event {
@@ -17,7 +17,8 @@ declare global {
   }
 }
 
-const AppInstallBanner = () => {
+// Component that actually uses the context
+function AppInstallBannerInner() {
   const [showBanner, setShowBanner] = useState(false);
   const [installPrompt, setInstallPrompt] = useState<BeforeInstallPromptEvent | null>(null);
   const [isIOS, setIsIOS] = useState(false);
@@ -217,6 +218,13 @@ const AppInstallBanner = () => {
       </div>
     </div>
   );
-};
+}
+
+// Wrapper component that provides the context
+const AppInstallBanner = () => (
+  <InstallPromptProvider>
+    <AppInstallBannerInner />
+  </InstallPromptProvider>
+);
 
 export default AppInstallBanner;
