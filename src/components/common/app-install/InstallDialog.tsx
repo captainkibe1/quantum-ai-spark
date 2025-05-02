@@ -69,7 +69,6 @@ function InstallButtonInner({
         )}
       </Button>
       
-      {/* Here we need to wrap the dialog content with a provider */}
       <InstallPromptProvider>
         <InstallDialogContent open={open} setOpen={setOpen} />
       </InstallPromptProvider>
