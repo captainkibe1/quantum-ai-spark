@@ -38,7 +38,7 @@ function InstallButtonsInner() {
 }
 
 // Public API - always wrapped with provider
-export function InstallButtons({ variant = "default" }) {
+export function InstallButtons() {
   return (
     <InstallPromptProvider>
       <InstallButtonsInner />

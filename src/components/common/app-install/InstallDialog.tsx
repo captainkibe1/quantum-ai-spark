@@ -153,8 +153,7 @@ function InstallDialog({
   );
 }
 
-// Export a wrapped version that already includes the provider - this should be the only
-// component imported and used by other files
+// Export a wrapped version that already includes the provider
 export function InstallButtonWithProvider({
   variant = "default",
   size = "default",
@@ -170,9 +169,6 @@ export function InstallButtonWithProvider({
     </InstallPromptProvider>
   );
 }
-
-// IMPORTANT: Do not export or use the unwrapped InstallButton component directly
-// Always use InstallButtonWithProvider instead
 
 // This export is maintained only for backward compatibility and will be removed in future
 export function InstallButton(props: {

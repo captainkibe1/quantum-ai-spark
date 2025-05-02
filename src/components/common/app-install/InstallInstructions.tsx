@@ -1,8 +1,9 @@
 
 import { Share2 } from 'lucide-react';
-import { useInstallPrompt } from './InstallPromptContext';
+import { useInstallPrompt, InstallPromptProvider } from './InstallPromptContext';
 
-export function IOSInstructions() {
+// Components that use the context need to be wrapped
+export function IOSInstructionsInner() {
   return (
     <div className="flex-1">
       <p className="font-medium">Install QuantumAI on your iOS device</p>
@@ -15,7 +16,7 @@ export function IOSInstructions() {
   );
 }
 
-export function AndroidInstructions() {
+export function AndroidInstructionsInner() {
   const { installPrompt } = useInstallPrompt();
   
   if (installPrompt) {
@@ -39,11 +40,36 @@ export function AndroidInstructions() {
   );
 }
 
-export function DefaultInstructions() {
+export function DefaultInstructionsInner() {
   return (
     <div className="flex-1">
       <p className="font-medium">Install QuantumAI on your device</p>
       <p className="text-sm opacity-80">Use our app for a better experience and offline access</p>
     </div>
+  );
+}
+
+// Exported components wrapped with the provider
+export function IOSInstructions() {
+  return (
+    <InstallPromptProvider>
+      <IOSInstructionsInner />
+    </InstallPromptProvider>
+  );
+}
+
+export function AndroidInstructions() {
+  return (
+    <InstallPromptProvider>
+      <AndroidInstructionsInner />
+    </InstallPromptProvider>
+  );
+}
+
+export function DefaultInstructions() {
+  return (
+    <InstallPromptProvider>
+      <DefaultInstructionsInner />
+    </InstallPromptProvider>
   );
 }
