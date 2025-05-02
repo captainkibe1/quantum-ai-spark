@@ -69,23 +69,8 @@ function InstallButtonInner({
         )}
       </Button>
       
-      <InstallDialogWrapper open={open} setOpen={setOpen} />
-    </>
-  );
-}
-
-// Separate dialog component wrapped with provider
-function InstallDialogWrapper({ 
-  open, 
-  setOpen 
-}: { 
-  open: boolean;
-  setOpen: (open: boolean) => void;
-}) {
-  return (
-    <InstallPromptProvider>
       <InstallDialogContent open={open} setOpen={setOpen} />
-    </InstallPromptProvider>
+    </>
   );
 }
 
@@ -127,6 +112,8 @@ function InstallDialogContent({
   };
 
   const appIcon = "/lovable-uploads/829d1eea-1380-41fa-8297-04d3cc474261.png";
+
+  if (!open) return null;
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
