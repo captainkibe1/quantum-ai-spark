@@ -11,7 +11,7 @@ import {
 } from '@/components/ui/dialog';
 import { useInstallPrompt, InstallPromptProvider } from './InstallPromptContext';
 
-// This component should NOT be used directly anymore - use InstallButtonWithProvider instead
+// This component uses the context and must be inside a provider
 function InstallButtonInner({ 
   variant = "default", 
   size = "default", 
@@ -171,15 +171,14 @@ export function InstallButtonWithProvider({
   );
 }
 
-// IMPORTANT: Do not export or use the unwrapped InstallButton component
-// Only export and use InstallButtonWithProvider
+// IMPORTANT: Do not export or use the unwrapped InstallButton component directly
+// Always use InstallButtonWithProvider instead
 
-// For backward compatibility, redirect to the wrapped version
+// This export is maintained only for backward compatibility and will be removed in future
 export function InstallButton(props: {
   variant?: "link" | "default" | "destructive" | "outline" | "secondary" | "ghost";
   size?: "default" | "sm" | "lg" | "icon";
   className?: string;
 }) {
-  console.warn("InstallButton is deprecated, use InstallButtonWithProvider instead");
   return <InstallButtonWithProvider {...props} />;
 }
