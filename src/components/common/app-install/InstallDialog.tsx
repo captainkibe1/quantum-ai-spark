@@ -187,14 +187,19 @@ export function InstallButtonWithProvider({
 }
 
 // For backward compatibility - this will be removed in a future version
-export function InstallButton(props: {
+export function InstallButton({
+  variant = "default",
+  size = "default",
+  className = ""
+}: {
   variant?: "link" | "default" | "destructive" | "outline" | "secondary" | "ghost";
   size?: "default" | "sm" | "lg" | "icon";
   className?: string;
 }) {
+  // We must wrap this with InstallPromptProvider to fix the context error
   return (
     <InstallPromptProvider>
-      <InstallButtonInner {...props} />
+      <InstallButtonInner variant={variant} size={size} className={className} />
     </InstallPromptProvider>
   );
 }
