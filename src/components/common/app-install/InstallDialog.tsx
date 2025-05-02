@@ -171,7 +171,10 @@ export function InstallButtonWithProvider({
   );
 }
 
-// Deprecated - for backward compatibility only, but all usage should be replaced with InstallButtonWithProvider
+// IMPORTANT: Do not export or use the unwrapped InstallButton component
+// Only export and use InstallButtonWithProvider
+
+// For backward compatibility, redirect to the wrapped version
 export function InstallButton(props: {
   variant?: "link" | "default" | "destructive" | "outline" | "secondary" | "ghost";
   size?: "default" | "sm" | "lg" | "icon";
