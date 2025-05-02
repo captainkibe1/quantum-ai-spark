@@ -11,7 +11,15 @@ import {
 } from '@/components/ui/dialog';
 import { useInstallPrompt } from './InstallPromptContext';
 
-export function InstallButton({ variant = "default", size = "default", className = "" }) {
+export function InstallButton({ 
+  variant = "default", 
+  size = "default", 
+  className = "" 
+}: { 
+  variant?: "link" | "default" | "destructive" | "outline" | "secondary" | "ghost";
+  size?: "default" | "sm" | "lg" | "icon";
+  className?: string;
+}) {
   const [open, setOpen] = useState(false);
   const { 
     installPrompt, 
@@ -44,8 +52,8 @@ export function InstallButton({ variant = "default", size = "default", className
   return (
     <>
       <Button 
-        variant={variant} 
-        size={size} 
+        variant={variant}
+        size={size}
         className={className} 
         onClick={handleClick} 
         title="Install app"
@@ -65,7 +73,13 @@ export function InstallButton({ variant = "default", size = "default", className
   );
 }
 
-function InstallDialog({ open, setOpen }) {
+function InstallDialog({ 
+  open, 
+  setOpen 
+}: { 
+  open: boolean;
+  setOpen: (open: boolean) => void;
+}) {
   const { 
     installPrompt, 
     installApp,
