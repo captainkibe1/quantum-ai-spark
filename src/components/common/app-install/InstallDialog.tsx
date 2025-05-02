@@ -69,90 +69,48 @@ function InstallButtonInner({
         )}
       </Button>
       
-      <InstallDialogContent open={open} setOpen={setOpen} />
-    </>
-  );
-}
-
-// Content component that uses the context
-function InstallDialogContent({ 
-  open, 
-  setOpen 
-}: { 
-  open: boolean;
-  setOpen: (open: boolean) => void;
-}) {
-  const { 
-    installPrompt, 
-    installApp,
-    isIOS,
-    isAndroid
-  } = useInstallPrompt();
-
-  const handleInstall = async () => {
-    if (installPrompt) {
-      await installApp();
-    } else if (isIOS) {
-      toast({
-        title: "iOS Installation",
-        description: "Check the banner at the bottom of the screen for iOS installation instructions"
-      });
-    } else if (isAndroid) {
-      toast({
-        title: "Android Installation",
-        description: "Check the banner at the bottom of the screen for installation instructions"
-      });
-    } else {
-      toast({
-        title: "Installation",
-        description: "Check your browser menu for installation options"
-      });
-    }
-    setOpen(false);
-  };
-
-  const appIcon = "/lovable-uploads/829d1eea-1380-41fa-8297-04d3cc474261.png";
-
-  if (!open) return null;
-
-  return (
-    <Dialog open={open} onOpenChange={setOpen}>
-      <DialogContent className="sm:max-w-md bg-zinc-900 text-white border-0 rounded-xl">
-        <DialogTitle className="text-lg text-center">Install app</DialogTitle>
-        
-        <div className="flex items-center space-x-4 py-4">
-          <div className="w-12 h-12 rounded-md overflow-hidden flex-shrink-0">
-            <img 
-              src={appIcon} 
-              alt="QuantumAI" 
-              className="w-full h-full object-cover"
-            />
-          </div>
-          <div>
-            <p className="font-medium">QuantumAI</p>
-            <p className="text-sm text-zinc-400">lovable.app</p>
-          </div>
-        </div>
-        
-        <DialogFooter className="sm:justify-center gap-2 mt-2">
-          <Button 
-            variant="default" 
-            className="bg-green-700 hover:bg-green-800 text-white min-w-24 rounded-full"
-            onClick={handleInstall}
-          >
-            Install
-          </Button>
+      <Dialog open={open} onOpenChange={setOpen}>
+        <DialogContent className="sm:max-w-md bg-zinc-900 text-white border-0 rounded-xl">
+          <DialogTitle className="text-lg text-center">Install app</DialogTitle>
           
-          <Button 
-            variant="outline" 
-            className="border-zinc-700 bg-zinc-800 text-white hover:bg-zinc-700 min-w-24 rounded-full"
-            onClick={() => setOpen(false)}
-          >
-            Cancel
-          </Button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
+          <div className="flex items-center space-x-4 py-4">
+            <div className="w-12 h-12 rounded-md overflow-hidden flex-shrink-0">
+              <img 
+                src="/lovable-uploads/829d1eea-1380-41fa-8297-04d3cc474261.png" 
+                alt="QuantumAI" 
+                className="w-full h-full object-cover"
+              />
+            </div>
+            <div>
+              <p className="font-medium">QuantumAI</p>
+              <p className="text-sm text-zinc-400">lovable.app</p>
+            </div>
+          </div>
+          
+          <DialogFooter className="sm:justify-center gap-2 mt-2">
+            <Button 
+              variant="default" 
+              className="bg-green-700 hover:bg-green-800 text-white min-w-24 rounded-full"
+              onClick={() => {
+                const { installApp } = useInstallPrompt();
+                installApp();
+                setOpen(false);
+              }}
+            >
+              Install
+            </Button>
+            
+            <Button 
+              variant="outline" 
+              className="border-zinc-700 bg-zinc-800 text-white hover:bg-zinc-700 min-w-24 rounded-full"
+              onClick={() => setOpen(false)}
+            >
+              Cancel
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    </>
   );
 }
 
@@ -183,7 +141,7 @@ export function InstallButton({
   size?: "default" | "sm" | "lg" | "icon";
   className?: string;
 }) {
-  // Ensure this component is always wrapped with the provider
+  // Always wrap this component with the provider to fix the error
   return (
     <InstallPromptProvider>
       <InstallButtonInner variant={variant} size={size} className={className} />
