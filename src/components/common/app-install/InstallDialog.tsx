@@ -69,12 +69,28 @@ function InstallButtonInner({
         )}
       </Button>
       
-      <InstallDialog open={open} setOpen={setOpen} />
+      <InstallDialogWrapper open={open} setOpen={setOpen} />
     </>
   );
 }
 
-function InstallDialog({ 
+// Separate dialog component wrapped with provider
+function InstallDialogWrapper({ 
+  open, 
+  setOpen 
+}: { 
+  open: boolean;
+  setOpen: (open: boolean) => void;
+}) {
+  return (
+    <InstallPromptProvider>
+      <InstallDialogContent open={open} setOpen={setOpen} />
+    </InstallPromptProvider>
+  );
+}
+
+// Content component that uses the context
+function InstallDialogContent({ 
   open, 
   setOpen 
 }: { 
@@ -176,6 +192,11 @@ export function InstallButton(props: {
   size?: "default" | "sm" | "lg" | "icon";
   className?: string;
 }) {
-  // Ensure this legacy function is also wrapped with the provider
-  return <InstallButtonWithProvider {...props} />;
+  // We need to wrap the InstallButton in its own InstallPromptProvider
+  // directly, not just return InstallButtonWithProvider
+  return (
+    <InstallPromptProvider>
+      <InstallButtonInner {...props} />
+    </InstallPromptProvider>
+  );
 }
