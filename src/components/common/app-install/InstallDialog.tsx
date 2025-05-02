@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { Download } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -9,9 +8,24 @@ import {
   DialogTitle,
   DialogFooter
 } from '@/components/ui/dialog';
-import { useInstallPrompt } from './InstallPromptContext';
+import { useInstallPrompt, InstallPromptProvider } from './InstallPromptContext';
 
 export function InstallButton({ 
+  variant = "default", 
+  size = "default", 
+  className = "" 
+}: { 
+  variant?: "link" | "default" | "destructive" | "outline" | "secondary" | "ghost";
+  size?: "default" | "sm" | "lg" | "icon";
+  className?: string;
+}) {
+  // Add a safety wrapper to ensure the component is always used with a provider
+  return (
+    <InstallButtonInner variant={variant} size={size} className={className} />
+  );
+}
+
+function InstallButtonInner({ 
   variant = "default", 
   size = "default", 
   className = "" 
@@ -149,5 +163,22 @@ function InstallDialog({
         </DialogFooter>
       </DialogContent>
     </Dialog>
+  );
+}
+
+// Export a wrapped version that already includes the provider
+export function InstallButtonWithProvider({
+  variant = "default",
+  size = "default",
+  className = ""
+}: {
+  variant?: "link" | "default" | "destructive" | "outline" | "secondary" | "ghost";
+  size?: "default" | "sm" | "lg" | "icon";
+  className?: string;
+}) {
+  return (
+    <InstallPromptProvider>
+      <InstallButton variant={variant} size={size} className={className} />
+    </InstallPromptProvider>
   );
 }
