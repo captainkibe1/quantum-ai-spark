@@ -4,34 +4,45 @@ import { Button } from '@/components/ui/button';
 import { X, Download, Info, Share2 } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
 
+// Declare the BeforeInstallPromptEvent interface
+interface BeforeInstallPromptEvent extends Event {
+  prompt: () => Promise<void>;
+  userChoice: Promise<{ outcome: 'accepted' | 'dismissed' }>;
+}
+
 const AppInstallBanner = () => {
   const [showBanner, setShowBanner] = useState(false);
-  const [installPrompt, setInstallPrompt] = useState<any>(null);
+  const [installPrompt, setInstallPrompt] = useState<BeforeInstallPromptEvent | null>(null);
   const [isIOS, setIsIOS] = useState(false);
   const [isAndroid, setIsAndroid] = useState(false);
+  const [isStandalone, setIsStandalone] = useState(false);
 
   useEffect(() => {
-    // Check if the app is already installed
+    // Check if the app is already installed or running in standalone mode
     const isAppInstalled = window.matchMedia('(display-mode: standalone)').matches;
+    setIsStandalone(isAppInstalled);
     
     // Check if the user has dismissed the banner before
     const bannerDismissed = localStorage.getItem('app-install-banner-dismissed') === 'true';
+    const lastDismissed = parseInt(localStorage.getItem('app-install-banner-dismissed-time') || '0', 10);
+    const daysSinceDismissed = (Date.now() - lastDismissed) / (1000 * 60 * 60 * 24);
+    const showAgain = daysSinceDismissed > 7; // Show again after a week
     
     // Detect iOS and Android
-    const ua = navigator.userAgent;
-    const iOS = /iPad|iPhone|iPod/.test(ua) && !(window as any).MSStream;
-    const android = /Android/.test(ua);
+    const ua = navigator.userAgent.toLowerCase();
+    const iOS = /iphone|ipad|ipod/.test(ua) && !window.MSStream;
+    const android = /android/.test(ua);
     
     setIsIOS(iOS);
     setIsAndroid(android);
     
-    if (!isAppInstalled && !bannerDismissed) {
+    if (!isAppInstalled && (!bannerDismissed || showAgain)) {
       // Handle beforeinstallprompt for Android and desktop
       const handleBeforeInstallPrompt = (e: Event) => {
         // Prevent the mini-infobar from appearing on mobile
         e.preventDefault();
         // Stash the event so it can be triggered later
-        setInstallPrompt(e);
+        setInstallPrompt(e as BeforeInstallPromptEvent);
         // Show the banner
         setShowBanner(true);
         console.log('Before install prompt captured');
@@ -55,11 +66,13 @@ const AppInstallBanner = () => {
   const dismissBanner = () => {
     setShowBanner(false);
     localStorage.setItem('app-install-banner-dismissed', 'true');
+    localStorage.setItem('app-install-banner-dismissed-time', Date.now().toString());
     console.log('Banner dismissed and preference saved');
   };
 
   const resetBannerDismissal = () => {
     localStorage.removeItem('app-install-banner-dismissed');
+    localStorage.removeItem('app-install-banner-dismissed-time');
     setShowBanner(true);
     console.log('Install banner preferences reset');
     toast({
@@ -75,10 +88,10 @@ const AppInstallBanner = () => {
     }
     
     console.log('Attempting to show install prompt');
-    // Show the install prompt
-    installPrompt.prompt();
-    
     try {
+      // Show the install prompt
+      await installPrompt.prompt();
+      
       // Wait for the user to respond to the prompt
       const { outcome } = await installPrompt.userChoice;
       console.log(`User choice outcome: ${outcome}`);
@@ -108,11 +121,11 @@ const AppInstallBanner = () => {
     return (
       <div className="flex-1">
         <p className="font-medium">Install QuantumAI on your iOS device</p>
-        <p className="text-sm opacity-80">
-          1. Tap <Share2 className="inline-block h-4 w-4" /> Share icon
-          <br/>
-          2. Scroll down and tap <strong>Add to Home Screen</strong>
-        </p>
+        <ol className="text-sm opacity-80 list-decimal pl-5 mt-1">
+          <li>Tap <Share2 className="inline-block h-4 w-4" /> Share icon in Safari</li>
+          <li>Scroll down and tap <strong>Add to Home Screen</strong></li>
+          <li>Tap <strong>Add</strong> in the top right corner</li>
+        </ol>
       </div>
     );
   };
@@ -129,11 +142,11 @@ const AppInstallBanner = () => {
       return (
         <div className="flex-1">
           <p className="font-medium">Install QuantumAI on your Android device</p>
-          <p className="text-sm opacity-80">
-            1. Tap menu icon in browser <span className="inline-block">⋮</span>
-            <br/>
-            2. Select <strong>Install App</strong> or <strong>Add to Home Screen</strong>
-          </p>
+          <ol className="text-sm opacity-80 list-decimal pl-5 mt-1">
+            <li>Tap menu icon <span className="inline-block">⋮</span> in Chrome</li>
+            <li>Select <strong>Install App</strong> or <strong>Add to Home Screen</strong></li>
+            <li>Tap <strong>Install</strong> when prompted</li>
+          </ol>
         </div>
       );
     }
@@ -147,6 +160,11 @@ const AppInstallBanner = () => {
       </div>
     );
   };
+
+  // If already in standalone mode, don't show any banner
+  if (isStandalone) {
+    return null;
+  }
 
   if (!showBanner) {
     // Show a small button to reset banner dismissal
@@ -177,8 +195,13 @@ const AppInstallBanner = () => {
             Install Now
           </Button>
         )}
-        {(!installPrompt && !isIOS) && (
-          <Button variant="secondary" onClick={() => window.open('https://web.dev/learn/pwa/installation/', '_blank')}>
+        {(!installPrompt && !isIOS && isAndroid) && (
+          <Button variant="secondary" onClick={() => {
+            toast({
+              title: "Installation tip",
+              description: "Look for 'Install App' in your browser's menu"
+            });
+          }}>
             <Info className="mr-1 h-4 w-4" />
             How to Install
           </Button>

@@ -7,7 +7,9 @@ import './index.css'
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', async () => {
     try {
-      const registration = await navigator.serviceWorker.register('/service-worker.js');
+      const registration = await navigator.serviceWorker.register('/service-worker.js', {
+        scope: '/'
+      });
       console.log('ServiceWorker registration successful with scope: ', registration.scope);
       
       // Check if there's an update and notify
@@ -20,6 +22,7 @@ if ('serviceWorker' in navigator) {
           newWorker.addEventListener('statechange', () => {
             if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
               console.log('New content is available, please refresh.');
+              // We can show a toast notification here in the future
             }
           });
         }
