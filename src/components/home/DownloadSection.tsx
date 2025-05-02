@@ -1,6 +1,5 @@
 
 import { MainPageDownloadButtons } from '@/components/common/app-install/InstallButtons';
-import { InstallPromptProvider } from '@/components/common/app-install/InstallPromptContext';
 
 export default function DownloadSection() {
   return (
@@ -10,12 +9,10 @@ export default function DownloadSection() {
         <p className="text-xl text-muted-foreground mb-8 max-w-2xl mx-auto">
           Get the best experience by installing our app on your device. Access QuantumAI offline and enjoy native-like performance.
         </p>
-        <InstallPromptProvider>
-          <MainPageDownloadButtons />
-          <p className="mt-4 text-sm text-muted-foreground">
-            Available for iOS, Android, and desktop browsers
-          </p>
-        </InstallPromptProvider>
+        <MainPageDownloadButtons />
+        <p className="mt-4 text-sm text-muted-foreground">
+          Available for iOS, Android, and desktop browsers
+        </p>
       </div>
     </section>
   );
