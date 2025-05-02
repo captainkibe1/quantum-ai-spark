@@ -7,7 +7,7 @@ import { useChat, ModelType } from '@/context/chat-context';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import ThemeToggle from '@/components/common/ThemeToggle';
-import { Drawer, DrawerContent, DrawerTrigger } from '@/components/ui/drawer';
+import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { ModeToggle } from '@/components/common/ModeToggle';
 
 interface ChatLayoutProps {
@@ -48,19 +48,19 @@ const ChatLayout: FC<ChatLayoutProps> = ({ children }) => {
 
   // Mobile drawer for sidebar
   const MobileSidebar = () => (
-    <Drawer>
-      <DrawerTrigger asChild>
+    <Sheet>
+      <SheetTrigger asChild>
         <Button variant="outline" size="icon" className="md:hidden">
           <Menu className="h-5 w-5" />
           <span className="sr-only">Toggle sidebar</span>
         </Button>
-      </DrawerTrigger>
-      <DrawerContent side="left" className="w-full sm:max-w-sm">
+      </SheetTrigger>
+      <SheetContent side="left" className="w-full sm:max-w-sm">
         <div className="h-[80vh] overflow-auto px-4 py-6">
           <SidebarContent />
         </div>
-      </DrawerContent>
-    </Drawer>
+      </SheetContent>
+    </Sheet>
   );
 
   const SidebarContent = () => (
