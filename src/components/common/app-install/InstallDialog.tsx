@@ -170,7 +170,7 @@ export function InstallButtonWithProvider({
   );
 }
 
-// This export is maintained only for backward compatibility and will be removed in future
+// Do not use this directly - it will be removed in a future version
 export function InstallButton(props: {
   variant?: "link" | "default" | "destructive" | "outline" | "secondary" | "ghost";
   size?: "default" | "sm" | "lg" | "icon";
