@@ -1,5 +1,5 @@
 
-const CACHE_NAME = 'quantum-ai-v4';
+const CACHE_NAME = 'quantum-ai-v5';
 const urlsToCache = [
   '/',
   '/index.html',

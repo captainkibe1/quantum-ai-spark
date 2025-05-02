@@ -19,6 +19,7 @@ import AdminSettings from "./pages/admin/Settings";
 import AdminAnalytics from "./pages/admin/Analytics";
 import ProtectedRoute from "./components/auth/ProtectedRoute";
 import AdminRoute from "./components/auth/AdminRoute";
+import AppInstallBanner from "./components/common/app-install/AppInstallBanner";
 
 const queryClient = new QueryClient();
 
@@ -30,6 +31,7 @@ const App = () => (
           <TooltipProvider>
             <Toaster />
             <Sonner />
+            <AppInstallBanner />
             <BrowserRouter>
               <Routes>
                 <Route path="/" element={<Index />} />

@@ -95,23 +95,36 @@ export function InstallPromptProvider({ children }: { children: ReactNode }) {
     localStorage.removeItem('app-install-banner-dismissed-time');
     setShowBanner(true);
     console.log('Install banner preferences reset');
+    toast({
+      title: "Install banner reset",
+      description: "You'll now see the install prompt again"
+    });
   };
 
   const installApp = async () => {
     if (!installPrompt) {
       console.log('No install prompt available');
-      toast({
-        title: "Installation not available",
-        description: "Please use your browser's menu to install the app",
-        variant: "destructive"
-      });
+      
+      // Check if it's Android but no prompt available yet
+      if (isAndroid) {
+        toast({
+          title: "Installation tip",
+          description: "Look for 'Install App' or 'Add to Home Screen' in your browser's menu",
+        });
+      } else {
+        toast({
+          title: "Installation not available",
+          description: "Please use your browser's menu to install the app",
+          variant: "destructive"
+        });
+      }
       return;
     }
     
     console.log('Attempting to show install prompt');
     try {
       // Show initial toast
-      const initialToast = toast({
+      toast({
         title: "Starting installation",
         description: "Please follow the browser prompts to install QuantumAI"
       });
@@ -130,7 +143,7 @@ export function InstallPromptProvider({ children }: { children: ReactNode }) {
       if (outcome === 'accepted') {
         toast({
           title: "Installation successful",
-          description: "QuantumAI was successfully added to your device!",
+          description: "QuantumAI was successfully added to your device!"
         });
         setShowBanner(false);
       } else {

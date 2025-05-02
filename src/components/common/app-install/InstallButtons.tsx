@@ -5,7 +5,7 @@ import { toast } from '@/hooks/use-toast';
 import { useInstallPrompt } from './InstallPromptContext';
 
 export function InstallButtons() {
-  const { installPrompt, dismissBanner, installApp } = useInstallPrompt();
+  const { installPrompt, dismissBanner, installApp, isIOS, isAndroid } = useInstallPrompt();
 
   return (
     <div className="flex items-center space-x-2">
@@ -21,7 +21,7 @@ export function InstallButtons() {
         </Button>
       )}
       
-      {(!installPrompt && !useInstallPrompt().isIOS && useInstallPrompt().isAndroid) && (
+      {(!installPrompt && !isIOS && isAndroid) && (
         <Button variant="secondary" onClick={() => {
           toast({
             title: "Installation tip",
