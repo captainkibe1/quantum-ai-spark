@@ -183,7 +183,7 @@ export function InstallButton({
   size?: "default" | "sm" | "lg" | "icon";
   className?: string;
 }) {
-  // This function needs to be fully wrapped with the provider
+  // Ensure this component is always wrapped with the provider
   return (
     <InstallPromptProvider>
       <InstallButtonInner variant={variant} size={size} className={className} />
